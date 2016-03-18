@@ -12,7 +12,7 @@ if(!defined("PLUGINLIBRARY"))
     define("PLUGINLIBRARY", MYBB_ROOT."inc/plugins/pluginlibrary.php");
 }
 
-$plugins->add_hook("admin_config_plugins_begin", "otomatikdil_yenile");
+$plugins->add_hook("admin_config_plugins_begin", "otomatikdil_eklentiler");
 
 function otomatikdil_info()
 {
@@ -24,7 +24,9 @@ function otomatikdil_info()
 	{
 		$ayar = "?module=config-settings&action=change&gid=".$ayarg["gid"];
 		$yenile = "?module=config-plugins&islem=yenile&my_post_key=".$mybb->post_code;
+		$globalphp_duzenle = "?module=config-plugins&islem=globalphp_duzenle&my_post_key=".$mybb->post_code;
 		$aciklama .= "<hr>If you upload new language pack you should update plugin settings. You can update manually with <a href=\"$ayar\">plugin settings</a> or you can use <a href=\"$yenile\">plugin auto creator</a>.";
+		$aciklama .= "<hr>If you change or update global.php (so Auto Language Switcher function caller removed) you must add caller. <a href=\"$globalphp_duzenle\">Click here</a> for adding caller.";
 	}
 	return array
 	(
@@ -32,7 +34,7 @@ function otomatikdil_info()
 		"author" => "Halil Selçuk",
 		"website" => "http://halil.selçuk.gen.tr",
 		"description" => $aciklama,
-		"version" => "1.0",
+		"version" => "1.1",
 		"authorsite" => "http://halil.selçuk.gen.tr",
 		"compatibility" => "*"
 	);
@@ -96,21 +98,7 @@ function otomatikdil_uninstall()
 
 function otomatikdil_activate()
 {
-	global $PL;
-	$PL or require_once PLUGINLIBRARY;
-	$result = $PL->edit_core
-	(
-	"otomatikdil", 
-	"global.php",
-	array
-	(
-		'search' => 
-		array("// Set and load the language"),
-		'replace' => "if(function_exists(otodil)) otodil();"
-	),
-	true
-	);
-	
+	globalphp_duzenle(false);
 }
 
 function otomatikdil_deactivate()
@@ -130,26 +118,53 @@ function otomatikdil_deactivate()
 	
 }
 
-function otomatikdil_yenile()
+function otomatikdil_eklentiler()
 {
-	global $db, $mybb;
-	
-    if($mybb->input['my_post_key'] != $mybb->post_code)
-    {
-        return;
-    }
-	
-	if($mybb->input['islem'] == 'yenile')
+	global $mybb;
+	$islem = $mybb->input['islem'];
+    if($mybb->input['my_post_key'] != $mybb->post_code) return;
+	if($islem == 'yenile')
 	{
-		$dizi = array
-		(
-			'value' => dilleriolustur()
-		);
-		if($db->update_query("settings", $dizi, "name='otomatikdil_diller'")) flash_message("Operation successful. If you have problems try manually update.", "success");
-		else flash_message("Something went wrong.", "error"); 
-		admin_redirect("index.php?module=config-plugins");
-		rebuild_settings();
+		dilleri_yenile();
 	}
+	else if($islem == "globalphp_duzenle")
+	{
+		globalphp_duzenle(true);
+	}
+}
+
+function globalphp_duzenle($yonlendir)
+{
+	global $PL;
+	$PL or require_once PLUGINLIBRARY;
+	$result = $PL->edit_core
+	(
+	"otomatikdil", 
+	"global.php",
+	array
+	(
+		'search' => 
+		array("// Set and load the language"),
+		'replace' => "if(function_exists(otodil)) otodil();"
+	),
+	true
+	);
+	if($result) flash_message("global.php edited successfuly.", "success");
+	else flash_message("global.php editing fail. You can edit global.php yourself. Add this code: if(function_exists(otodil)) otodil();  Under this code: \$mybb->post_code = generate_post_check();", "error");
+	if($yonlendir) admin_redirect("index.php?module=config-plugins");
+}
+
+function dilleri_yenile()
+{
+	$dizi = array
+	(
+		'value' => dilleriolustur()
+	);
+	if($db->update_query("settings", $dizi, "name='otomatikdil_diller'")) flash_message("Operation successful. If you have problems try manually update.", "success");
+	else flash_message("Something went wrong.", "error"); 
+	admin_redirect("index.php?module=config-plugins");
+	rebuild_settings();
+	
 }
 	
 function otodil()
@@ -177,7 +192,7 @@ function diladi($dilkodu)
 		if(isset($a2[0])) $diller[trim($a2[0])] = trim($a2[1]);
 	}
 	if(isset($diller[$dilkodu])) return $diller[$dilkodu];
-	else return "english";
+	else return $settings['bblanguage'];
 }
 
 function dilleriolustur()
