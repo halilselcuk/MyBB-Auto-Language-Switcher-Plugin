@@ -16,27 +16,42 @@ $plugins->add_hook("admin_config_plugins_begin", "otomatikdil_eklentiler");
 
 function otomatikdil_info()
 {
-	global $mybb, $db;
-	$aciklama = "Auto language switcher according to the user's browser language.";
+	global $mybb, $db, $lang, $cp_language;
+	if(!file_exists(MYBB_ROOT . "inc/languages/" . $cp_language . "/otomatikdil.lang.php")) $lang->set_language("english", "admin");
+	$lang->load("otomatikdil", true);
+	$lang->set_language($cp_language, "admin");
+	$aciklama = $lang->otomatikdil_plugin_desc;
 	$sorgu = $db->query("SELECT * FROM ".TABLE_PREFIX."settinggroups WHERE name='otomatikdil'");
 	$ayarg = $db->fetch_array($sorgu);
+	
 	if($ayarg != null)
 	{
 		$ayar = "?module=config-settings&action=change&gid=".$ayarg["gid"];
 		$yenile = "?module=config-plugins&islem=yenile&my_post_key=".$mybb->post_code;
 		$globalphp_duzenle = "?module=config-plugins&islem=globalphp_duzenle&my_post_key=".$mybb->post_code;
-		$aciklama .= "<hr>If you upload new language pack you should update plugin settings. You can update manually with <a href=\"$ayar\">plugin settings</a> or you can use <a href=\"$yenile\">plugin auto creator</a>.";
-		$aciklama .= "<hr>If you change or update global.php (so Auto Language Switcher function caller removed) you must add caller. <a href=\"$globalphp_duzenle\">Click here</a> for adding caller.";
+		$aciklama .= $lang->otomatikdil_try;
+		$aciklama .= $lang->sprintf($lang->otomatikdil_settings_url, $ayar, $yenile);
+		$dosya = MYBB_ROOT."/global.php";
+		if(file_exists($dosya))
+		{
+		$globalphpac = fopen($dosya, 'r');
+		$globalphp = fread($globalphpac, filesize($dosya));
+		fclose($globalphpac);
+		if(!strpos($globalphp, "otodil();"))
+		$aciklama .= $lang->sprintf($lang->otomatikdil_caller_not_found, $globalphp_duzenle);
+		}
 	}
+	
 	return array
 	(
-		"name" => "Auto Language Switcher",
+		"name" => $lang->otomatikdil_plugin_name,
 		"author" => "Halil Selçuk",
-		"website" => "http://halil.selçuk.gen.tr",
+		"website" => "https://halilselcuk.blogspot.com.tr/2016/08/mybb-auto-language-switcher.html",
 		"description" => $aciklama,
-		"version" => "1.1",
+		"version" => "1.2",
 		"authorsite" => "http://halil.selçuk.gen.tr",
-		"compatibility" => "*"
+		"compatibility" => "*",
+		"codename"		=> "otomatikdil"
 	);
 	
 }
@@ -49,9 +64,13 @@ function otomatikdil_is_installed()
 
 function otomatikdil_install()
 {
+	global $lang, $cp_language;
+	if(!file_exists(MYBB_ROOT . "inc/languages/" . $cp_language . "/otomatikdil.lang.php")) $lang->set_language("english", "admin");
+	$lang->load("otomatikdil", true);
+	$lang->set_language($cp_language, "admin");
     if(!file_exists(PLUGINLIBRARY))
     {
-        flash_message("The selected plugin could not be installed because <a href=\"http://mods.mybb.com/view/pluginlibrary\">PluginLibrary</a> is missing.", "error");
+        flash_message($lang->otomatikdil_pl_missing, "error");
         admin_redirect("index.php?module=config-plugins");
     }
 	
@@ -60,25 +79,21 @@ function otomatikdil_install()
 	
     if($PL->version < 11)
     {
-        flash_message("The selected plugin could not be installed because <a href=\"http://mods.mybb.com/view/pluginlibrary\">PluginLibrary</a> is too old.", "error");
+        flash_message($lang->otomatikdil_pl_old, "error");
         admin_redirect("index.php?module=config-plugins");
     }
 	
 	$PL->settings(
 	"otomatikdil",
-	"Auto Language Switcher Settings",
-	"Add languages for auto switch.",
+	$lang->otomatikdil_settings,
+	$lang->otomatikdil_settings_desc,
 	array
 		(
 			"diller" => 
 							array
 							(
-								"title" => "Languages:",
-								"description" => "You can add new languages using this format: <i>Language Code</i> = <i>Language Name</i>, 
-								<br> <i><a href=\"http://www.w3schools.com/tags/ref_language_codes.asp\">Language Code</a></i>: It's sending by browser. Plugin only uses the first two characters. This must be only two charecters.(Plugin auto creator using language pack \$langinfo['htmllang'] variable. So it may wrong, if you have problem try change this code.).
-								<br><i>Language Name</i>: I think think it's language pack file name. You can see your language packs on MYBB_ROOT/inc/languages (Plugin auto creator using language pack file names).
-								<br>Note: You can find auto creator in the plugin manager.
-								",
+								"title" => $lang->otomatikdil_langs,
+								"description" => $lang->otomatikdil_langs_desc,
 								"optionscode" => "textarea",
 								"value" => dilleriolustur()
 							)
@@ -131,11 +146,18 @@ function otomatikdil_eklentiler()
 	{
 		globalphp_duzenle(true);
 	}
+	
+	
 }
 
 function globalphp_duzenle($yonlendir)
 {
-	global $PL;
+	global $PL, $lang, $cp_language;
+	
+	if(!file_exists(MYBB_ROOT . "inc/languages/" . $cp_language . "/otomatikdil.lang.php")) $lang->set_language("english", "admin");
+	$lang->load("otomatikdil", true);
+	$lang->set_language($cp_language, "admin");
+	
 	$PL or require_once PLUGINLIBRARY;
 	$result = $PL->edit_core
 	(
@@ -149,19 +171,23 @@ function globalphp_duzenle($yonlendir)
 	),
 	true
 	);
-	if($result) flash_message("global.php edited successfuly.", "success");
-	else flash_message("global.php editing fail. You can edit global.php yourself. Add this code: if(function_exists(otodil)) otodil();  Under this code: \$mybb->post_code = generate_post_check();", "error");
+	if($result) flash_message($lang->otomatikdil_global_edit_success, "success");
+	else flash_message($lang->otomatikdil_global_edit_fail, "error");
 	if($yonlendir) admin_redirect("index.php?module=config-plugins");
 }
 
 function dilleri_yenile()
 {
+	global $db, $lang, $cp_language;
+	if(!file_exists(MYBB_ROOT . "inc/languages/" . $cp_language . "/otomatikdil.lang.php")) $lang->set_language("english", "admin");
+	$lang->load("otomatikdil", true);
+	$lang->set_language($cp_language, "admin");
 	$dizi = array
 	(
 		'value' => dilleriolustur()
 	);
-	if($db->update_query("settings", $dizi, "name='otomatikdil_diller'")) flash_message("Operation successful. If you have problems try manually update.", "success");
-	else flash_message("Something went wrong.", "error"); 
+	if($db->update_query("settings", $dizi, "name='otomatikdil_diller'")) flash_message($lang->otomatikdil_update_lang_list_success, "success");
+	else flash_message($lang->otomatikdil_update_lang_list_fail, "error"); 
 	admin_redirect("index.php?module=config-plugins");
 	rebuild_settings();
 	
@@ -172,9 +198,9 @@ function otodil()
 	global $mybb, $lang;
 	if($mybb->user['usergroup'] == 1)
 	{
-		$dilad = diladi(strtolower(substr($_SERVER['HTTP_ACCEPT_LANGUAGE'], 0, 2)));
 		if(!isset($mybb->cookies['mybblang']))
 		{
+			$dilad = diladi(strtolower(substr($_SERVER['HTTP_ACCEPT_LANGUAGE'], 0, 2)));
 			my_setcookie('mybblang',  $dilad);
 		}
 	}
@@ -183,7 +209,7 @@ function otodil()
 function diladi($dilkodu)
 {
 	global $settings;
-	$ayar = $settings['otomatikdil_diller'];
+	$ayar = strtolower($settings['otomatikdil_diller']);
 	$a1 = explode (",", $ayar);
 	$diller;
 	foreach($a1 as $a)
@@ -204,7 +230,11 @@ function dilleriolustur()
 		if(!is_dir($dizin.$a) && $a != "index.html")
 		{
 			require $dizin.$a;
+			if(isset($langinfo['htmllang']))
+			{
 			$ret .= substr($langinfo['htmllang'], 0, 2)." = ".str_replace(".php", "", $a) . ",\r";
+			unset($langinfo['htmllang']);
+			}
 		}
 	}
 	return $ret;
