@@ -48,7 +48,7 @@ function otomatikdil_info()
 		"author" => "Halil Selçuk",
 		"website" => "https://halilselcuk.blogspot.com.tr/2016/08/mybb-auto-language-switcher.html",
 		"description" => $aciklama,
-		"version" => "1.2",
+		"version" => "1.2.1",
 		"authorsite" => "http://halil.selçuk.gen.tr",
 		"compatibility" => "*",
 		"codename"		=> "otomatikdil"
@@ -186,7 +186,11 @@ function dilleri_yenile()
 	(
 		'value' => dilleriolustur()
 	);
-	if($db->update_query("settings", $dizi, "name='otomatikdil_diller'")) flash_message($lang->otomatikdil_update_lang_list_success, "success");
+	if($db->update_query("settings", $dizi, "name='otomatikdil_diller'"))
+	{
+	rebuild_settings();
+	flash_message($lang->otomatikdil_update_lang_list_success, "success");
+	}
 	else flash_message($lang->otomatikdil_update_lang_list_fail, "error"); 
 	admin_redirect("index.php?module=config-plugins");
 	rebuild_settings();
@@ -195,7 +199,7 @@ function dilleri_yenile()
 	
 function otodil()
 {
-	global $mybb, $lang;
+	global $mybb;
 	if($mybb->user['usergroup'] == 1)
 	{
 		if(!isset($mybb->cookies['mybblang']))
