@@ -33,11 +33,11 @@ function otomatikdil_info()
 		$dosya = MYBB_ROOT."/global.php";
 		if(file_exists($dosya))
 		{
-		$globalphpac = fopen($dosya, 'r');
-		$globalphp = fread($globalphpac, filesize($dosya));
-		fclose($globalphpac);
-		if(strpos($globalphp, "otodil();") === false || strpos($globalphp, "function_exists(otodil)") !== false)
-		$aciklama .= $lang->sprintf($lang->otomatikdil_caller_not_found, $globalphp_duzenle);
+			$globalphpac = fopen($dosya, 'r');
+			$globalphp = fread($globalphpac, filesize($dosya));
+			fclose($globalphpac);
+			if(strpos($globalphp, "otodil();") === false || strpos($globalphp, "function_exists(otodil)") !== false)
+			$aciklama .= $lang->sprintf($lang->otomatikdil_caller_not_found, $globalphp_duzenle);
 		}
 	}
 	
@@ -158,23 +158,6 @@ function globalphp_duzenle($yonlendir)
 	$lang->set_language($cp_language, "admin");
 	
 	$PL or require_once PLUGINLIBRARY;
-	
-	//Remove old function_exists usage
-	$globalphpac = fopen($dosya, 'r');
-	$globalphp = fread($globalphpac, filesize($dosya));
-	fclose($globalphpac);
-	if(strpos($globalphp, "function_exists(otodil)") !== false)
-	{
-		$result = $PL->edit_core
-		(
-		"otomatikdil", 
-		"global.php",
-		array
-		(
-		),
-		true
-		);
-	}
 	
 	$result = $PL->edit_core
 	(
