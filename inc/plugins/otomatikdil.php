@@ -1,7 +1,6 @@
 <?php
 /*
 Halil Selçuk
-http://halil.selçuk.gen.tr
 */
 if(!defined("IN_MYBB")) 
 {
@@ -37,7 +36,7 @@ function otomatikdil_info()
 		$globalphpac = fopen($dosya, 'r');
 		$globalphp = fread($globalphpac, filesize($dosya));
 		fclose($globalphpac);
-		if(!strpos($globalphp, "otodil();"))
+		if(strpos($globalphp, "otodil();") === false || strpos($globalphp, "function_exists(otodil)") !== false)
 		$aciklama .= $lang->sprintf($lang->otomatikdil_caller_not_found, $globalphp_duzenle);
 		}
 	}
@@ -46,10 +45,10 @@ function otomatikdil_info()
 	(
 		"name" => $lang->otomatikdil_plugin_name,
 		"author" => "Halil Selçuk",
-		"website" => "https://halilselcuk.blogspot.com.tr/2016/08/mybb-auto-language-switcher.html",
+		"website" => "https://www.halilselcuk.net/2016/08/mybb-auto-language-switcher.html",
 		"description" => $aciklama,
-		"version" => "1.2.1",
-		"authorsite" => "http://halil.selçuk.gen.tr",
+		"version" => "1.2.2",
+		"authorsite" => "https://halilselcuk.com",
 		"compatibility" => "*",
 		"codename"		=> "otomatikdil"
 	);
@@ -159,6 +158,24 @@ function globalphp_duzenle($yonlendir)
 	$lang->set_language($cp_language, "admin");
 	
 	$PL or require_once PLUGINLIBRARY;
+	
+	//Remove old function_exists usage
+	$globalphpac = fopen($dosya, 'r');
+	$globalphp = fread($globalphpac, filesize($dosya));
+	fclose($globalphpac);
+	if(strpos($globalphp, "function_exists(otodil)") !== false)
+	{
+		$result = $PL->edit_core
+		(
+		"otomatikdil", 
+		"global.php",
+		array
+		(
+		),
+		true
+		);
+	}
+	
 	$result = $PL->edit_core
 	(
 	"otomatikdil", 
@@ -167,7 +184,7 @@ function globalphp_duzenle($yonlendir)
 	(
 		'search' => 
 		array("// Set and load the language"),
-		'replace' => "if(function_exists(otodil)) otodil();"
+		'replace' => "if(function_exists('otodil')) otodil();"
 	),
 	true
 	);
