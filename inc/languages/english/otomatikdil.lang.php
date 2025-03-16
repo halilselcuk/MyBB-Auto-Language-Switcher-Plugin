@@ -2,7 +2,7 @@
 
 $l['otomatikdil_plugin_name'] = "Auto Language Switcher";
 
-$l['otomatikdil_plugin_desc'] = "This plugin change forum's language according to the user's browser language.";
+$l['otomatikdil_plugin_desc'] = "Automatically adjusts forum language based on users' browser preferences.";
 
 $l['otomatikdil_try'] = "<hr>Test it: To understand the plugin working correctly you can use the <a href=\"https://chromewebstore.google.com/detail/locale-switcher/kngfjpghaokedippaapkfihdlmmlafcc\" target=\"_blank\"> Google Chrome extension Locale Switcher</a>. Don't forget you must clear your cookies before the test.";
 
@@ -21,11 +21,11 @@ $l['otomatikdil_settings_desc'] = "Add languages for auto switch.";
 $l['otomatikdil_langs'] = "Languages:";
 
 $l['otomatikdil_langs_desc'] = "You can add new languages using this format: <i>Language Code</i> = <i>Language Name</i>, 
-								<br> <i><a href=\"http://www.w3schools.com/tags/ref_language_codes.asp\">Language Code</a></i>: It's sending by browser. Plugin only uses the first two characters. This must be only two charecters.(Plugin's auto creator is using language pack's \$langinfo['htmllang'] variable.) So it may be wrong, if you have any problem with that try to change this code.
-								<br><i>Language Name</i>:This is language pack file name. You can find your language packs on MYBB_ROOT/inc/languages (Plugin auto creator using language pack file names).
+								<br> <i><a href=\"http://www.w3schools.com/tags/ref_language_codes.asp\">Language Code</a></i>:The code sent by the browser. The plugin only considers the first two characters, so it must be exactly two characters long. (The plugin’s auto creator retrieves this value from the language pack’s \$langinfo['htmllang'] variable.) If you experience any issues, try modifying this code.
+								<br><i>Language Name</i>:This is the name of the language pack file. You can find your language packs in the MYBB_ROOT/inc/languages directory, as the plugin’s auto creator uses these file names.
 								<br>Note: You can find auto creator in the plugin manager.";
 
-$l['otomatikdil_global_edit_success'] = "global.php edited successfuly.";
+$l['otomatikdil_global_edit_success'] = "Global.php successfully modified.";
 
 $l['otomatikdil_global_edit_fail'] = "global.php editing fail. You can edit global.php yourself. Add this code: if(function_exists(otodil)) otodil();  Under this code: \$mybb->post_code = generate_post_check();";
 
