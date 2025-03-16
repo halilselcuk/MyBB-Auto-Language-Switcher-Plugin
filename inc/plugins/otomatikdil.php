@@ -135,8 +135,7 @@ function otomatikdil_deactivate()
 function otomatikdil_eklentiler()
 {
 	global $mybb;
-	$islem = $mybb->input['islem'];
-    if($mybb->input['my_post_key'] != $mybb->post_code) return;
+	$islem = $mybb->input['islem'] ?? null;
 	if($islem == 'yenile')
 	{
 		dilleri_yenile();
@@ -219,7 +218,10 @@ function diladi($dilkodu)
 	foreach($a1 as $a)
 	{
 		$a2 = explode("=", $a);
-		if(isset($a2[0])) $diller[trim($a2[0])] = trim($a2[1]);
+		if (isset($a2[0]) && isset($a2[1])) 
+		{
+			$diller[trim($a2[0])] = trim($a2[1]);
+		}
 	}
 	if(isset($diller[$dilkodu])) return $diller[$dilkodu];
 	else return $settings['bblanguage'];
