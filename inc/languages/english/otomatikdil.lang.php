@@ -4,7 +4,7 @@ $l['otomatikdil_plugin_name'] = "Auto Language Switcher";
 
 $l['otomatikdil_plugin_desc'] = "This plugin change forum's language according to the user's browser language.";
 
-$l['otomatikdil_try'] = "<hr>Test it: To understand the plugin working correctly you can use the <a href=\"https://chrome.google.com/webstore/detail/quick-language-switcher/pmjbhfmaphnpbehdanbjphdcniaelfie\" target=\"_blank\">Google Chrome extension called Quick Language Switcher</a>. Don't forget you must clear your cookies before the test.";
+$l['otomatikdil_try'] = "<hr>Test it: To understand the plugin working correctly you can use the <a href=\"https://chromewebstore.google.com/detail/locale-switcher/kngfjpghaokedippaapkfihdlmmlafcc\" target=\"_blank\"> Google Chrome extension Locale Switcher</a>. Don't forget you must clear your cookies before the test.";
 
 $l['otomatikdil_settings_url'] =  "<hr>If you upload new language pack you should update plugin settings. You can use <a href=\"{2}\">plugin auto creator</a> or you can update manually with <a href=\"{1}\">plugin settings</a> (advanced).";
 

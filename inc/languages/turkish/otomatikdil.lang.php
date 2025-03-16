@@ -4,7 +4,7 @@ $l['otomatikdil_plugin_name'] = "Otomatik Dil Değiştirici";
 
 $l['otomatikdil_plugin_desc'] = "Bu eklenti forumun dilini kullanıcının tarayıcı diline göre değiştirir.";
 
-$l['otomatikdil_try'] = "<hr>Deneyin: Eklentinin çalışıp çalışmadığını anlamak için <a href=\"https://chrome.google.com/webstore/detail/quick-language-switcher/pmjbhfmaphnpbehdanbjphdcniaelfie\" target=\"_blank\">Quick Language Switcher adlı Google Chrome eklentisini</a> kullanabilirsiniz. Denemeden önce çerezleri temizlemeniz gerektiğini unutmayın.";
+$l['otomatikdil_try'] = "<hr>Deneyin: Eklentinin çalışıp çalışmadığını anlamak için <a href=\"https://chromewebstore.google.com/detail/locale-switcher/kngfjpghaokedippaapkfihdlmmlafcc\" target=\"_blank\">Locale Switcher adlı Google Chrome eklentisini</a> kullanabilirsiniz. Denemeden önce çerezleri temizlemeniz gerektiğini unutmayın.";
 
 $l['otomatikdil_settings_url'] =  "<hr>Eğer yeni dil paketi yüklediyseniz eklenti ayarlarını güncellemelisiniz. <a href=\"{2}\">Eklentinin otomatik oluşturucusunu</a> kullanabilir ya da <a href=\"{1}\">eklenti ayarlarıyla</a> elle güncelleyebilirsiniz.";
 
