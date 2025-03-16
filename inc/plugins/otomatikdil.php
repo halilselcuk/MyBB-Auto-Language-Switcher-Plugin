@@ -45,7 +45,7 @@ function otomatikdil_info()
 	(
 		"name" => $lang->otomatikdil_plugin_name,
 		"author" => "Halil Selçuk",
-		"website" => "https://www.halilselcuk.net/2016/08/mybb-auto-language-switcher.html",
+		"website" => "https://halilselcuk.blogspot.com/2016/08/mybb-auto-language-switcher.html",
 		"description" => $aciklama,
 		"version" => "1.2.2",
 		"authorsite" => "https://halilselcuk.com",
